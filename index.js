@@ -5,6 +5,7 @@ const { MongoClient, ServerApiVersion,ObjectId  } = require('mongodb');
 
 const jwt = require('jsonwebtoken');
 const app = express();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 
@@ -37,6 +38,7 @@ async function run(){
         const reviewCollection = client.db('computer-manufacturer').collection('review');
         const userCollection = client.db('computer-manufacturer').collection('users');
         const orderCollection = client.db('computer-manufacturer').collection('order');  
+        const paymentCollection = client.db('computer-manufacturer').collection('payment');  
         app.get('/part', async (req, res) => {
           const query = {};
           const cursor = partCollection.find(query);
@@ -64,6 +66,20 @@ async function run(){
       res.send({ result, token });
     })
 
+//payment
+
+app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
+  const service = req.body;
+  const price = service.price;
+  const amount = price*100;
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount : amount,
+    currency: 'usd',
+    payment_method_types:['card']
+  });
+  res.send({clientSecret: paymentIntent.client_secret})
+});
+
     //purschase
     app.get('/part/:id', async (req, res) => {
       const id = req.params.id;
@@ -79,6 +95,45 @@ async function run(){
 
     return res.send({ success: true, result });
   });
+//order one by id
+app.get('/order/:id',verifyJWT, async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: ObjectId(id) };
+  const order = await orderCollection.findOne(query);
+  res.send(order);
+});
+
+//payment update
+app.patch('/order/:id', verifyJWT, async(req, res) =>{
+  const id  = req.params.id;
+  const payment = req.body;
+  const filter = {_id: ObjectId(id)};
+  const updatedDoc = {
+    $set: {
+      paid: true,
+      transactionId: payment.transactionId
+    }
+  }
+
+  const result = await paymentCollection.insertOne(payment);
+  const updatedBooking = await orderCollection.updateOne(filter, updatedDoc);
+  res.send(updatedBooking);
+})
+
+
+//my order
+app.get('/myorder', verifyJWT, async (req, res) => {
+  const userMail = req.query.email;
+  const decodedEmail = req.decoded.email;
+  if (userMail === decodedEmail) {
+    const query = { email: userMail };
+    const order = await orderCollection.find(query).toArray();
+    return res.send(order);
+  }
+  else {
+    return res.status(403).send({ message: 'forbidden access' });
+  }
+})
 
     }
     finally{
