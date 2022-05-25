@@ -17,16 +17,21 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
+  console.log(authHeader);
   if (!authHeader) {
     return res.status(401).send({ message: 'UnAuthorized access' });
   }
   const token = authHeader.split(' ')[1];
+  console.log(token)
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    console.log(err)
     if (err) {
       return res.status(403).send({ message: 'Forbidden access' })
     }
+
     req.decoded = decoded;
     next();
+    console.log(decoded)
   });
 }
 
@@ -39,8 +44,13 @@ async function run(){
         const userCollection = client.db('computer-manufacturer').collection('users');
         const orderCollection = client.db('computer-manufacturer').collection('order');  
         const paymentCollection = client.db('computer-manufacturer').collection('payment');  
+        const serviceCollection = client.db('computer-manufacturer').collection('service');
+        const professionalCollection = client.db('computer-manufacturer').collection('professional');
+          
           
       
+       
+
         app.get('/part', async (req, res) => {
           const query = {};
           const cursor = partCollection.find(query);
@@ -53,6 +63,20 @@ async function run(){
           const review = await cursor.toArray();
           res.send(review);
         }); 
+        app.get('/service', async (req, res) => {
+          const query = {};
+          const cursor = serviceCollection.find(query);
+          const service = await cursor.toArray();
+          res.send(service);
+        }); 
+        app.get('/professional', async (req, res) => {
+          const query = {};
+          const cursor = professionalCollection.find(query);
+          const professional = await cursor.toArray();
+          res.send(professional);
+        }); 
+
+
 //admin
 const verifyAdmin = async (req, res, next) => {
   const requester = req.decoded.email;
@@ -79,6 +103,24 @@ app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
   const result = await userCollection.updateOne(filter, updateDoc);
   res.send(result);
 })
+//put user additional info
+app.put('/userUpdate/:email', verifyJWT, async (req, res) => {
+  const email = req.params.email;
+  const profile=req.body;
+  const filter = { email: email };
+  const updateDoc = {
+    $set: { 
+      name:profile.name,
+      education:profile.education,
+      location:profile.location,
+      phone:profile.phone,
+      linkedin:profile.linkedin
+    },
+  };
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+  console.log(result);
+})
 
      //put user 
      app.put('/user/:email', async (req, res) => {
@@ -90,7 +132,7 @@ app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
         $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
       res.send({ result, token });
     })
 
@@ -107,7 +149,12 @@ app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
   });
   res.send({clientSecret: paymentIntent.client_secret})
 });
-
+app.get('/order', async (req, res) => {
+  const query = {};
+  const cursor = orderCollection.find(query);
+  const part = await cursor.toArray();
+  res.send(part);
+}); 
     //purschase
     app.get('/part/:id', async (req, res) => {
       const id = req.params.id;
@@ -130,6 +177,16 @@ app.get('/order/:id',verifyJWT, async (req, res) => {
   const order = await orderCollection.findOne(query);
   res.send(order);
 });
+app.put('/order/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: ObjectId(id) };
+  
+  const updateDoc = {
+    $set: { status: 'shipped' },
+  };
+  const result = await orderCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
 
 //payment update
 app.patch('/order/:id', verifyJWT, async(req, res) =>{
@@ -153,7 +210,12 @@ app.get('/user', verifyJWT,verifyAdmin, async (req, res) => {
   const users = await userCollection.find().toArray();
   res.send(users);
 });
-
+app.get('/user/:email',verifyJWT, async (req, res) => {
+  const email = req.params.email;
+  const query={email:email}
+  const users = await userCollection.findOne(query);
+  res.send(users);
+});
 //delete order
 app.delete('/order/:id', verifyJWT, async (req, res) => {
   const id  = req.params.id;
@@ -165,6 +227,12 @@ app.delete('/order/:id', verifyJWT, async (req, res) => {
 app.post('/review', verifyJWT, async (req, res) => {
   const review = req.body;
   const result = await reviewCollection.insertOne(review);
+  res.send(result);
+});
+//admin add part
+app.post('/part', verifyJWT, verifyAdmin,async (req, res) => {
+  const part = req.body;
+  const result = await partCollection.insertOne(part);
   res.send(result);
 });
 
