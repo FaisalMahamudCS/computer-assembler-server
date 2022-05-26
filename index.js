@@ -240,6 +240,17 @@ app.delete('/order/:id', verifyJWT, async (req, res) => {
   const result = await orderCollection.deleteOne(filter);
   res.send(result);
 })
+
+//delete part
+app.delete('/part/:id', verifyJWT, async (req, res) => {
+  const id  = req.params.id;
+  const filter = {_id: ObjectId(id)};
+  const result = await partCollection.deleteOne(filter);
+  res.send(result);
+  console.log(result);
+})
+
+
 //review add
 app.post('/review', verifyJWT, async (req, res) => {
   const review = req.body;
