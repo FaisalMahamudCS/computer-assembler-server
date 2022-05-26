@@ -121,6 +121,23 @@ app.put('/userUpdate/:email', verifyJWT, async (req, res) => {
   res.send(result);
   console.log(result);
 })
+//available quantiy update
+app.put('/purchaseUpdate/:id', verifyJWT, async (req, res) => {
+  const id = req.params.id;
+  const data=req.body;
+console.log(data)
+
+  const filter =   { _id: ObjectId(id) }; 
+  const updateDoc = {
+    $set: { 
+      availableQuantity:data.availables
+    },
+  };
+  const result = await partCollection.updateOne(filter, updateDoc);
+  res.send(result);
+  console.log(result);
+})
+
 
      //put user 
      app.put('/user/:email', async (req, res) => {
