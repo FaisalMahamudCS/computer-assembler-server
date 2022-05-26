@@ -88,12 +88,13 @@ const verifyAdmin = async (req, res, next) => {
     res.status(403).send({ message: 'forbidden' });
   }
 }
-app.get('/admin/:email', async (req, res) => {
+app.get('/admin/:email', verifyJWT,verifyAdmin, async (req, res) => {
   const email = req.params.email;
   const user = await userCollection.findOne({ email: email });
   const isAdmin = user.role === 'admin';
   res.send({ admin: isAdmin })
 })
+// admin roll setter
 app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
   const email = req.params.email;
   const filter = { email: email };
@@ -166,21 +167,21 @@ app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
   });
   res.send({clientSecret: paymentIntent.client_secret})
 });
-app.get('/order', async (req, res) => {
+app.get('/order',verifyJWT, async (req, res) => {
   const query = {};
   const cursor = orderCollection.find(query);
   const part = await cursor.toArray();
   res.send(part);
 }); 
     //purschase
-    app.get('/part/:id', async (req, res) => {
+    app.get('/part/:id',verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const part = await partCollection.findOne(query);
       res.send(part);
   });
 
-  app.post('/purchase', async (req, res) => {
+  app.post('/purchase', verifyJWT, async (req, res) => {
     const purchase = req.body;
    
     const result = await orderCollection.insertOne(purchase);
@@ -194,7 +195,8 @@ app.get('/order/:id',verifyJWT, async (req, res) => {
   const order = await orderCollection.findOne(query);
   res.send(order);
 });
-app.put('/order/:id', async (req, res) => {
+//admin put shipped
+app.put('/order/:id',verifyJWT,verifyAdmin, async (req, res) => {
   const id = req.params.id;
   const filter = { _id: ObjectId(id) };
   
@@ -242,7 +244,7 @@ app.delete('/order/:id', verifyJWT, async (req, res) => {
 })
 
 //delete part
-app.delete('/part/:id', verifyJWT, async (req, res) => {
+app.delete('/part/:id', verifyJWT,verifyAdmin, async (req, res) => {
   const id  = req.params.id;
   const filter = {_id: ObjectId(id)};
   const result = await partCollection.deleteOne(filter);
