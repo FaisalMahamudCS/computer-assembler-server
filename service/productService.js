@@ -6,6 +6,10 @@ const createProduct = async (productData) => {
   const product = new Product(productData);
   return await product.save();
 };
+const addReview = async (productData) => {
+  const product = new Review(productData);
+  return await product.save();
+};
 
 const getProducts = async () => {
   return await Product.find();
@@ -47,5 +51,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getItemsByEmail,
-  getReviews
+  getReviews,
+  addReview
 };

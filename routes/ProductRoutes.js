@@ -6,6 +6,7 @@ const  JWTVarification  = require('../middleware/JWTVerification');
 router.post('/add', productController.createProduct);
 router.get('/all', productController.getProducts);
 router.get('/reviews', productController.getReviews);
+router.get('/add/review', productController.addReview);
 router.get('/myitem/all', JWTVarification,productController.getAllProducts);
 router.get('/:id', productController.getProductById);
 router.put('/restock/:id', productController.updateProduct);
