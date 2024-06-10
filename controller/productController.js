@@ -18,6 +18,14 @@ const getProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getReviews = async (req, res) => {
+  try {
+    const products = await productService.getReviews();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const getAllProducts = async (req, res) => {
   try {
     const decodedEmail=req?.decoded?.email ;
@@ -78,5 +86,6 @@ module.exports = {
   getProductById,
   updateProduct,
   deleteProduct,
-  getAllProducts
+  getAllProducts,
+  getReviews
 };
