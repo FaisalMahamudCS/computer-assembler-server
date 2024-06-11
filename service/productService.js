@@ -2,9 +2,15 @@ const { ObjectId } = require('mongodb');
 const Product = require('../models/Product');
 const Review = require('../models/Review');
 const Service = require('../models/Service');
+const Order = require('../models/Order');
 
 const createProduct = async (productData) => {
   const product = new Product(productData);
+  return await product.save();
+};
+
+const purchase = async (productData) => {
+  const product = new Order(productData);
   return await product.save();
 };
 const addReview = async (productData) => {
@@ -57,5 +63,6 @@ module.exports = {
   getItemsByEmail,
   getReviews,
   addReview,
-  getServices
+  getServices,
+  purchase
 };

@@ -4,6 +4,7 @@ const productController = require('../controller/productController');
 const  JWTVarification  = require('../middleware/JWTVerification');
 
 router.post('/add', productController.createProduct);
+router.post('/purchase', productController.purchase);
 router.get('/all', productController.getProducts);
 router.get('/reviews', productController.getReviews);
 router.get('/service', productController.getServices);

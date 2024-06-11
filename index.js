@@ -207,12 +207,12 @@ app.get('/order',verifyJWT, async (req, res) => {
   res.send(part);
 }); 
     //purschase
-    app.get('/part/:id',verifyJWT, async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const part = await partCollection.findOne(query);
-      res.send(part);
-  });
+  //   app.get('/part/:id',verifyJWT, async (req, res) => {
+  //     const id = req.params.id;
+  //     const query = { _id: ObjectId(id) };
+  //     const part = await partCollection.findOne(query);
+  //     res.send(part);
+  // });
 
   app.post('/purchase', verifyJWT, async (req, res) => {
     const purchase = req.body;
