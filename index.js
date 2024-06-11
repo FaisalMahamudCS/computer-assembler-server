@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion,ObjectId  } = require('mongodb');
 const productRoutes = require('./routes/ProductRoutes');
+const userRoutes = require('./routes/UserRoutes');
 
 const jwt = require('jsonwebtoken');
 const connectDB = require('./connection/connection');
@@ -39,6 +40,7 @@ function verifyJWT(req, res, next) {
   });
 }
 app.use('/api/products', productRoutes);
+app.use('/api/user', userRoutes);
 
 // const motherboards = [
 //   {
@@ -91,24 +93,24 @@ async function run(){
       
        
 
-        app.get('/part', async (req, res) => {
-          const query = {};
-          const cursor = partCollection.find(query);
-          const part = await cursor.toArray();
-          res.send(part);
-        }); 
-        app.get('/review', async (req, res) => {
-          const query = {};
-          const cursor = reviewCollection.find(query);
-          const review = await cursor.toArray();
-          res.send(review);
-        }); 
-        app.get('/service', async (req, res) => {
-          const query = {};
-          const cursor = serviceCollection.find(query);
-          const service = await cursor.toArray();
-          res.send(service);
-        }); 
+        // app.get('/part', async (req, res) => {
+        //   const query = {};
+        //   const cursor = partCollection.find(query);
+        //   const part = await cursor.toArray();
+        //   res.send(part);
+        // }); 
+        // app.get('/review', async (req, res) => {
+        //   const query = {};
+        //   const cursor = reviewCollection.find(query);
+        //   const review = await cursor.toArray();
+        //   res.send(review);
+        // }); 
+        // app.get('/service', async (req, res) => {
+        //   const query = {};
+        //   const cursor = serviceCollection.find(query);
+        //   const service = await cursor.toArray();
+        //   res.send(service);
+        // }); 
         app.get('/professional', async (req, res) => {
           const query = {};
           const cursor = professionalCollection.find(query);
@@ -118,16 +120,7 @@ async function run(){
 
 
 //admin
-const verifyAdmin = async (req, res, next) => {
-  const requester = req.decoded.email;
-  const requesterAccount = await userCollection.findOne({ email: requester });
-  if (requesterAccount.role === 'admin') {
-    next();
-  }
-  else {
-    res.status(403).send({ message: 'forbidden' });
-  }
-}
+
 app.get('/admin/:email', verifyJWT,verifyAdmin, async (req, res) => {
   const email = req.params.email;
   const user = await userCollection.findOne({ email: email });
@@ -294,11 +287,11 @@ app.delete('/part/:id', verifyJWT,verifyAdmin, async (req, res) => {
 
 
 //review add
-app.post('/review', verifyJWT, async (req, res) => {
-  const review = req.body;
-  const result = await reviewCollection.insertOne(review);
-  res.send(result);
-});
+// app.post('/review', verifyJWT, async (req, res) => {
+//   const review = req.body;
+//   const result = await reviewCollection.insertOne(review);
+//   res.send(result);
+// });
 //admin add part
 app.post('/part', verifyJWT, verifyAdmin,async (req, res) => {
   const part = req.body;

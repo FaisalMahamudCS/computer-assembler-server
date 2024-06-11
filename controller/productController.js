@@ -34,6 +34,14 @@ const getReviews = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getServices = async (req, res) => {
+  try {
+    const products = await productService.getServices();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const getAllProducts = async (req, res) => {
   try {
     const decodedEmail=req?.decoded?.email ;
@@ -96,5 +104,6 @@ module.exports = {
   deleteProduct,
   getAllProducts,
   getReviews,
-  addReview
+  addReview,
+  getServices
 };
