@@ -66,6 +66,22 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getOrders = async (req, res) => {
+  try {
+    const decodedEmail=req?.decoded?.email ;
+    console.log("Decoded",decodedEmail)
+    const email=req.query.email;
+    if (email === decodedEmail) {
+      const items = await productService.getOrders(email);
+      console.log("item",items)
+      res.status(200).json(items);
+    } else {
+      res.status(403).json({ message: 'Forbidden' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 const getProductById = async (req, res) => {
   try {
@@ -114,5 +130,6 @@ module.exports = {
   getReviews,
   addReview,
   getServices,
-  purchase
+  purchase,
+  getOrders
 };

@@ -32,6 +32,11 @@ const getItemsByEmail = async (email) => {
     const cursor=Product.find(query);
   return cursor
   };
+const getOrders = async (email) => {
+  const query={email:email};
+    const cursor=Order.find(query);
+  return cursor
+  };
 
 const getProductById = async (id) => {
   return await Product.findById(id);
@@ -40,13 +45,13 @@ const getProductById = async (id) => {
 const updateProduct = async (id, updateData) => {
   
 
-  const updateDoc={
-     $set:{
-          quantity:updateData.restock
-     },
+  // const updateDoc={
+  //    $set:{
+  //         quantity:updateData.restock
+  //    },
      
-  };
-  const resultQuantity=await Product.findByIdAndUpdate(id,updateDoc,{ new: true });
+  // };
+  const resultQuantity=await Product.findByIdAndUpdate(id,updateData,{ new: true });
   return resultQuantity
 };
 
@@ -64,5 +69,6 @@ module.exports = {
   getReviews,
   addReview,
   getServices,
-  purchase
+  purchase,
+  getOrders
 };

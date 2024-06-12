@@ -5,7 +5,9 @@ const  JWTVarification  = require('../middleware/JWTVerification');
 
 router.post('/add', productController.createProduct);
 router.post('/purchase', productController.purchase);
+// router.put('/purchaseUpdate/:id', productController.purchaseUpdate);
 router.get('/all', productController.getProducts);
+router.get('/allOrders',JWTVarification, productController.getOrders);
 router.get('/reviews', productController.getReviews);
 router.get('/service', productController.getServices);
 router.post('/add/review', productController.addReview);
