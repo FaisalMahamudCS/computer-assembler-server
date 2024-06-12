@@ -50,6 +50,17 @@ const getServices = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const createPaymentIntent = async (req, res) => {
+  try {
+    const service = req.body;
+    const price = service.price;
+    const amount = price*100;
+    const paymentIntent = await productService.createPaymentIntent(service,price,amount);
+    res.status(200).send({clientSecret: paymentIntent.client_secret});
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const getAllProducts = async (req, res) => {
   try {
     const decodedEmail=req?.decoded?.email ;
@@ -95,12 +106,33 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getOrderById = async (req, res) => {
+  try {
+    const product = await productService.getOrderById(req.params.id);
+   
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const updateProduct = async (req, res) => {
   try {
     const updatedProduct = await productService.updateProduct(req.params.id, req.body);
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateOrder = async (req, res) => {
+  try {
+    const updatedProduct = await productService.updateOrder(req.params.id, req.body);
+  
     res.status(200).json(updatedProduct);
   } catch (error) {
     console.log(error)
@@ -131,5 +163,8 @@ module.exports = {
   addReview,
   getServices,
   purchase,
-  getOrders
+  getOrders,
+  updateOrder,
+  createPaymentIntent,
+  getOrderById
 };
