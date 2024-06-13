@@ -5,9 +5,11 @@ const  JWTVarification  = require('../middleware/JWTVerification');
 
 router.post('/add', productController.createProduct);
 router.post('/purchase', productController.purchase);
+router.delete('/product/:id', productController.deleteProduct);
 // router.put('/purchaseUpdate/:id', productController.purchaseUpdate);
 router.get('/all', productController.getProducts);
 router.get('/allOrders',JWTVarification, productController.getOrders);
+router.get('/getAllOrders',JWTVarification, productController.getAllOrders);
 router.post('/create-payment-intent',JWTVarification, productController.createPaymentIntent);
 router.put('/order/:id',JWTVarification, productController.updateOrder);
 router.get('/order/:id',JWTVarification, productController.getOrderById);

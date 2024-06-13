@@ -46,6 +46,10 @@ const getOrders = async (email) => {
     const cursor=Order.find(query);
   return cursor
   };
+const getAllOrders = async (email) => {
+    const cursor=Order.find();
+  return cursor
+  };
 
 const getProductById = async (id) => {
   return await Product.findById(id);
@@ -109,5 +113,6 @@ module.exports = {
   getOrders,
   createPaymentIntent,
   updateOrder,
-  getOrderById
+  getOrderById,
+  getAllOrders
 };

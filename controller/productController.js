@@ -50,6 +50,14 @@ const getServices = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getAllOrders = async (req, res) => {
+  try {
+    const products = await productService.getAllOrders();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const createPaymentIntent = async (req, res) => {
   try {
     const service = req.body;
@@ -166,5 +174,6 @@ module.exports = {
   getOrders,
   updateOrder,
   createPaymentIntent,
-  getOrderById
+  getOrderById,
+  getAllOrders
 };

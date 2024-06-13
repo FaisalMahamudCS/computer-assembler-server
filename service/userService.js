@@ -15,8 +15,16 @@ const updateUser = async (email, updateData) => {
   console.log("Result",resultQuantity)
   return resultQuantity
 };
-
+const getUsers = async () => {
+  return await User.find();
+};
+const getAdmin = async (email) => {
+  const user = await User.findOne({ email: email });
+  const isAdmin = user.role === 'admin'
+  return isAdmin;
+}
 module.exports = {
-  
-  updateUser
+  getUsers,
+  updateUser,
+  getAdmin
 };
