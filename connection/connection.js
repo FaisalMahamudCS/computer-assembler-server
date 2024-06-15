@@ -2,7 +2,7 @@
 const { MongoClient } = require('mongodb');
 const { default: mongoose } = require('mongoose');
 
-const uri = process.env.DB_URI;
+const uri =`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.vulljcl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 let db;
 
